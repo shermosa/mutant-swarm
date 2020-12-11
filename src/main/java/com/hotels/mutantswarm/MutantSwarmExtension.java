@@ -42,10 +42,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
+import com.klarna.hiverunner.HiveRunnerCore;
 import com.klarna.hiverunner.HiveRunnerExtension;
 import com.klarna.hiverunner.HiveShellContainer;
 import com.klarna.hiverunner.annotations.HiveSQL;
 import com.klarna.hiverunner.builder.HiveRunnerScript;
+import com.klarna.hiverunner.builder.HiveShellBuilder;
 import com.klarna.hiverunner.builder.Script;
 import com.klarna.hiverunner.config.HiveRunnerConfig;
 import com.klarna.reflection.ReflectionUtils;
@@ -74,6 +76,8 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   private ExecutionContext resultContext = contextRef.get();
   private boolean firstTestPassed = true;
   private MutantSwarmCore core = new MutantSwarmCore();
+  private HiveRunnerCore hiveRunnerCore = new HiveRunnerCore();
+  private HiveShellBuilder hiveShellBuilder = new HiveShellBuilder();
 
   public MutantSwarmExtension() {}
 
@@ -167,42 +171,16 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   // This method sets the scripts for the first time to generate the swarm
   private void setFirstScripts(ExtensionContext context) {
     try {
-      Set<Field> fields = ReflectionUtils.getAllFields(context.getRequiredTestClass(), withAnnotation(HiveSQL.class));
-
       scriptsUnderTest.clear();
+      
+      List<Path> scriptPaths = hiveRunnerCore.getScriptPaths(context.getRequiredTestClass());
 
-      Preconditions.checkState(fields.size() == 1, "Exactly one field should be annotated with @HiveSQL");
-      Field field = fields.iterator().next();
-      List<Path> scriptPaths = new ArrayList<>();
-      HiveSQL annotation = field.getAnnotation(HiveSQL.class);
+      Charset charset = hiveRunnerCore.getCharset(context.getRequiredTestClass());
 
-      for (String scriptFilePath : annotation.files()) {
-        Path file = Paths.get(Resources.getResource(scriptFilePath).toURI());
-        assertFileExists(file);
-        scriptPaths.add(file);
-      }
-
-      Charset charset = annotation.encoding().equals("") ? Charset.defaultCharset()
-          : Charset.forName(annotation.encoding());
-
-      int index = 0;
-      for (Path path : scriptPaths) {
-        Preconditions.checkState(Files.exists(path), "File %s does not exist", path);
-        try {
-          String sqlText = new String(Files.readAllBytes(path), charset);
-          Script script = new HiveRunnerScript(index++, path, sqlText);
-          scriptsUnderTest.add(script);
-        } catch (IOException e) {
-          throw new IllegalArgumentException("Failed to load script file '" + path + "'");
-        }
-      }
+      scriptsUnderTest = hiveShellBuilder.setScriptsUnderTest(scriptPaths, charset);
     } catch (Throwable t) {
       throw new IllegalArgumentException("Failed to init field annotated with @HiveSQL: " + t.getMessage(), t);
     }
-  }
-
-  private void assertFileExists(Path file) {
-    Preconditions.checkState(Files.exists(file), "File " + file + " does not exist");
   }
 
 }

@@ -76,7 +76,6 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   private ExecutionContext resultContext = contextRef.get();
   private boolean firstTestPassed = true;
   private MutantSwarmCore core = new MutantSwarmCore();
-  private HiveRunnerCore hiveRunnerCore = new HiveRunnerCore();
   private HiveShellBuilder hiveShellBuilder = new HiveShellBuilder();
 
   public MutantSwarmExtension() {}
@@ -88,10 +87,10 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
 
   @Override
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-    testNumber = -1;
-    firstTestPassed = true;
 
-    setFirstScripts(context);
+    testNumber = -1;
+
+      setFirstScripts(context);
 
     if (contextRef.get() == null) {
       Swarm swarm = core.generateSwarm(scriptsUnderTest, HiveRunnerConfig.getCommandShellEmulator());
@@ -166,6 +165,7 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
     SwarmResults swarmResults = core.getSwarmResults(resultContext);
     log.debug("Finished testing. Generating report.");
     new ReportGenerator(swarmResults).generate();
+
   }
 
   // This method sets the scripts for the first time to generate the swarm
@@ -173,9 +173,9 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
     try {
       scriptsUnderTest.clear();
       
-      List<Path> scriptPaths = hiveRunnerCore.getScriptPaths(context.getRequiredTestClass());
+      List<Path> scriptPaths = getScriptPaths(context.getRequiredTestClass());
 
-      Charset charset = hiveRunnerCore.getCharset(context.getRequiredTestClass());
+      Charset charset = getCharset(context.getRequiredTestClass());
 
       scriptsUnderTest = hiveShellBuilder.setScriptsUnderTest(scriptPaths, charset);
     } catch (Throwable t) {

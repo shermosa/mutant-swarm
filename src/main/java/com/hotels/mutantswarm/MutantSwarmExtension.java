@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
-import com.klarna.hiverunner.HiveRunnerCore;
 import com.klarna.hiverunner.HiveRunnerExtension;
 import com.klarna.hiverunner.HiveShellContainer;
 import com.klarna.hiverunner.annotations.HiveSQL;
@@ -172,12 +171,11 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   private void setFirstScripts(ExtensionContext context) {
     try {
       scriptsUnderTest.clear();
-      
-      List<Path> scriptPaths = getScriptPaths(context.getRequiredTestClass());
-
-      Charset charset = getCharset(context.getRequiredTestClass());
-
-      scriptsUnderTest = hiveShellBuilder.setScriptsUnderTest(scriptPaths, charset);
+      Set<Field> fields = ReflectionUtils.getAllFields(context.getRequiredTestClass(), withAnnotation(HiveSQL.class));
+      Preconditions.checkState(fields.size() == 1, "Exact one field should to be annotated with @HiveSQL");
+      Field field = fields.iterator().next();
+      HiveSQL annotation = field.getAnnotation(HiveSQL.class);
+      getScriptPaths(annotation, new HiveShellBuilder()); 
     } catch (Throwable t) {
       throw new IllegalArgumentException("Failed to init field annotated with @HiveSQL: " + t.getMessage(), t);
     }

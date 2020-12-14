@@ -88,8 +88,12 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
     testNumber = -1;
+    
+    if (container != null) {
+      container.tearDown();
+    }
 
-      setFirstScripts(context);
+    setFirstScripts(context);
 
     if (contextRef.get() == null) {
       Swarm swarm = core.generateSwarm(scriptsUnderTest, HiveRunnerConfig.getCommandShellEmulator());
@@ -175,7 +179,13 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
       Preconditions.checkState(fields.size() == 1, "Exact one field should to be annotated with @HiveSQL");
       Field field = fields.iterator().next();
       HiveSQL annotation = field.getAnnotation(HiveSQL.class);
-      getScriptPaths(annotation, new HiveShellBuilder()); 
+      List<Path> scriptPaths = getScriptPaths(annotation, new HiveShellBuilder());
+      
+      Charset charset = annotation.encoding().equals("") ? Charset.defaultCharset() : Charset.forName(annotation.encoding());
+      
+      scriptsUnderTest = hiveShellBuilder.setScriptsUnderTest(scriptPaths, charset);
+      
+      
     } catch (Throwable t) {
       throw new IllegalArgumentException("Failed to init field annotated with @HiveSQL: " + t.getMessage(), t);
     }

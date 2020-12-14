@@ -88,11 +88,6 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
     testNumber = -1;
-    
-    if (container != null) {
-      container.tearDown();
-    }
-
     setFirstScripts(context);
 
     if (contextRef.get() == null) {
@@ -168,7 +163,6 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
     SwarmResults swarmResults = core.getSwarmResults(resultContext);
     log.debug("Finished testing. Generating report.");
     new ReportGenerator(swarmResults).generate();
-
   }
 
   // This method sets the scripts for the first time to generate the swarm
@@ -176,7 +170,7 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
     try {
       scriptsUnderTest.clear();
       Set<Field> fields = ReflectionUtils.getAllFields(context.getRequiredTestClass(), withAnnotation(HiveSQL.class));
-      Preconditions.checkState(fields.size() == 1, "Exact one field should to be annotated with @HiveSQL");
+      Preconditions.checkState(fields.size() == 1, "Exactly one field should be annotated with @HiveSQL");
       Field field = fields.iterator().next();
       HiveSQL annotation = field.getAnnotation(HiveSQL.class);
       List<Path> scriptPaths = getScriptPaths(annotation, new HiveShellBuilder());

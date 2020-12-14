@@ -90,7 +90,7 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
 
     testNumber = -1;
 
-      setFirstScripts(context);
+    setFirstScripts(context);
 
     if (contextRef.get() == null) {
       Swarm swarm = core.generateSwarm(scriptsUnderTest, HiveRunnerConfig.getCommandShellEmulator());
@@ -165,7 +165,6 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
     SwarmResults swarmResults = core.getSwarmResults(resultContext);
     log.debug("Finished testing. Generating report.");
     new ReportGenerator(swarmResults).generate();
-
   }
 
   // This method sets the scripts for the first time to generate the swarm

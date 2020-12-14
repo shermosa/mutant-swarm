@@ -89,7 +89,7 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
     testNumber = -1;
-
+    firstTestPassed = true;
     setFirstScripts(context);
 
     if (contextRef.get() == null) {

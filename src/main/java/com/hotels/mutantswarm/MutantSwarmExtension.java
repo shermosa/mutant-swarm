@@ -17,12 +17,9 @@ package com.hotels.mutantswarm;
 
 import static org.reflections.ReflectionUtils.withAnnotation;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,11 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.google.common.io.Resources;
 import com.klarna.hiverunner.HiveRunnerExtension;
 import com.klarna.hiverunner.HiveShellContainer;
 import com.klarna.hiverunner.annotations.HiveSQL;
-import com.klarna.hiverunner.builder.HiveRunnerScript;
 import com.klarna.hiverunner.builder.HiveShellBuilder;
 import com.klarna.hiverunner.builder.Script;
 import com.klarna.hiverunner.config.HiveRunnerConfig;
@@ -85,8 +80,8 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
 
   @Override
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-
     testNumber = -1;
+    firstTestPassed = true;
     setFirstScripts(context);
 
     if (contextRef.get() == null) {

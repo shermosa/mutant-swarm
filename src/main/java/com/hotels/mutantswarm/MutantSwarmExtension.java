@@ -75,7 +75,6 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
   private ExecutionContext resultContext = contextRef.get();
   private boolean firstTestPassed = true;
   private MutantSwarmCore core = new MutantSwarmCore();
-  private HiveShellBuilder hiveShellBuilder = new HiveShellBuilder();
 
   public MutantSwarmExtension() {}
 
@@ -167,6 +166,7 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
 
   // This method sets the scripts for the first time to generate the swarm
   private void setFirstScripts(ExtensionContext context) {
+    HiveShellBuilder hiveShellBuilder = new HiveShellBuilder();
     try {
       scriptsUnderTest.clear();
       Set<Field> fields = ReflectionUtils.getAllFields(context.getRequiredTestClass(), withAnnotation(HiveSQL.class));

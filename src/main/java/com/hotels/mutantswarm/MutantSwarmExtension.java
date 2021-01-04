@@ -172,7 +172,7 @@ public class MutantSwarmExtension extends HiveRunnerExtension implements AfterAl
       
       Charset charset = annotation.encoding().equals("") ? Charset.defaultCharset() : Charset.forName(annotation.encoding());
       
-      scriptsUnderTest = hiveShellBuilder.setScriptsUnderTest(scriptPaths, charset);
+      scriptsUnderTest = hiveShellBuilder.fromScriptPaths(scriptPaths, charset);
       
       
     } catch (Throwable t) {

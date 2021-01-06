@@ -154,7 +154,6 @@
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
           <systemProperties>
-            <excludedGroups>mutantswarm</excludedGroups>
             <!-- Any hive conf property may be overridden here by suffixing
               it with 'hiveconf_' -->
             <hiveconf_hive.execution.engine>${hive.execution.engine}</hiveconf_hive.execution.engine>

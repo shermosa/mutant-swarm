@@ -144,7 +144,6 @@
 </dependency>
   </dependencies>
 
-
   <build>
     <plugins>
       <!-- forkMode:always resolves OOM error when running unit tests -->

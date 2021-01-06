@@ -31,7 +31,6 @@ import com.klarna.hiverunner.annotations.HiveSetupScript;
 
 import com.hotels.mutantswarm.annotation.MutantSwarmTest;
 
-
 @ExtendWith(MutantSwarmExtension.class)
 public class MutantSwarmExtensionTest {
 
